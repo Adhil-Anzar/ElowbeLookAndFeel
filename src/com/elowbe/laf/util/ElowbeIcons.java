@@ -81,6 +81,10 @@ public final class ElowbeIcons {
         return new FileSystemIcon(size, "details");
     }
 
+    public static Icon gallery(int size) {
+        return new FileSystemIcon(size, "gallery");
+    }
+
     private static Icon icon(IconCode code, int size) {
         register();
         return new FontAwesomeIcon(code, size);
@@ -109,7 +113,11 @@ public final class ElowbeIcons {
                 color = component.getForeground();
             }
             Icon icon = IconFontSwing.buildIcon(code, size, color == null ? Color.GRAY : color);
-            icon.paintIcon(component, graphics, x, y);
+            // The built glyph image rarely matches the advertised size box, so
+            // center it instead of anchoring it top-left.
+            int dx = (size - icon.getIconWidth()) / 2;
+            int dy = (size - icon.getIconHeight()) / 2;
+            icon.paintIcon(component, graphics, x + dx, y + dy);
         }
 
         @Override
@@ -157,6 +165,13 @@ public final class ElowbeIcons {
                     drawList(g2, foreground, false);
                 } else if ("details".equals(type)) {
                     drawList(g2, foreground, true);
+                } else if ("gallery".equals(type)) {
+                    g2.setColor(foreground);
+                    int cell = (size - 6) / 2;
+                    g2.fillRoundRect(2, 2, cell, cell, 2, 2);
+                    g2.fillRoundRect(size - 2 - cell, 2, cell, cell, 2, 2);
+                    g2.fillRoundRect(2, size - 2 - cell, cell, cell, 2, 2);
+                    g2.fillRoundRect(size - 2 - cell, size - 2 - cell, cell, cell, 2, 2);
                 } else {
                     g2.fillRoundRect(3, 2, size - 6, size - 4, 3, 3);
                     g2.setColor(foreground);
@@ -172,8 +187,9 @@ public final class ElowbeIcons {
 
         private void drawList(Graphics2D g2, Color color, boolean columns) {
             g2.setColor(color);
+            int startY = Math.max(0, (size - 13) / 2);
             for (int row = 0; row < 3; row++) {
-                int y = 4 + row * 5;
+                int y = startY + row * 5;
                 g2.fillRoundRect(3, y, 3, 3, 2, 2);
                 g2.drawLine(8, y + 1, size - 3, y + 1);
                 if (columns) {

@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Window;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
@@ -21,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -274,9 +276,22 @@ public class ElowbeComboBoxUI extends BasicComboBoxUI {
         private int popupY(int defaultY, int height) {
             try {
                 Point screenLocation = comboBox.getLocationOnScreen();
+                int popupBottom = screenLocation.y + defaultY + height;
+
                 GraphicsConfiguration configuration = comboBox.getGraphicsConfiguration();
-                Rectangle bounds = configuration == null ? null : configuration.getBounds();
-                if (bounds != null && screenLocation.y + defaultY + height > bounds.y + bounds.height) {
+                Rectangle screen = configuration == null ? null : configuration.getBounds();
+                boolean pastScreen = screen != null && popupBottom > screen.y + screen.height;
+
+                // A popup that escapes the window is promoted to a heavyweight
+                // native window with square corners; keep it inside so it stays
+                // a lightweight, rounded popup.
+                Window window = SwingUtilities.getWindowAncestor(comboBox);
+                Rectangle windowBounds = window != null && window.isShowing() ? window.getBounds() : null;
+                boolean pastWindow = windowBounds != null
+                        && popupBottom > windowBounds.y + windowBounds.height;
+                boolean roomAbove = windowBounds == null || screenLocation.y - height >= windowBounds.y;
+
+                if ((pastScreen || pastWindow) && roomAbove) {
                     return -height;
                 }
             } catch (IllegalComponentStateException ex) {
