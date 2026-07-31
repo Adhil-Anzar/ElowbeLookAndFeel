@@ -68,6 +68,7 @@ public final class ElowbeDefaults {
         defaults.put("Elowbe.font.title", titleFont);
         defaults.put("Elowbe.font.mono", monoFont);
         defaults.put("TableHeader.font", new FontUIResource(smallFont.deriveFont(Font.BOLD)));
+        defaults.put("Table.font", smallFont);
 
         installColors(defaults, palette);
         installBorders(defaults, palette);
@@ -101,12 +102,27 @@ public final class ElowbeDefaults {
         putColors(defaults, palette.mutedForeground, "Label.disabledForeground", "Button.disabledText",
                 "CheckBox.disabledText", "RadioButton.disabledText", "TextField.inactiveForeground",
                 "TextArea.inactiveForeground", "ComboBox.disabledForeground");
-        putColors(defaults, palette.selection, "TextField.selectionBackground", "TextArea.selectionBackground",
-                "TextPane.selectionBackground", "List.selectionBackground", "Table.selectionBackground",
-                "Tree.selectionBackground", "ComboBox.selectionBackground");
-        putColors(defaults, palette.selectionForeground, "TextField.selectionForeground", "TextArea.selectionForeground",
-                "TextPane.selectionForeground", "List.selectionForeground", "Table.selectionForeground",
-                "Tree.selectionForeground", "ComboBox.selectionForeground");
+        putColors(defaults, palette.selection,
+                "TextField.selectionBackground",
+                "PasswordField.selectionBackground",
+                "FormattedTextField.selectionBackground",
+                "TextArea.selectionBackground",
+                "TextPane.selectionBackground",
+                "EditorPane.selectionBackground",
+                "List.selectionBackground",
+                "Table.selectionBackground",
+                "Tree.selectionBackground");
+
+        putColors(defaults, palette.selectionForeground,
+                "TextField.selectionForeground",
+                "PasswordField.selectionForeground",
+                "FormattedTextField.selectionForeground",
+                "TextArea.selectionForeground",
+                "TextPane.selectionForeground",
+                "EditorPane.selectionForeground",
+                "List.selectionForeground",
+                "Table.selectionForeground",
+                "Tree.selectionForeground");
         putColors(defaults, palette.popover, "PopupMenu.background", "Menu.background", "CheckBoxMenuItem.background",
                 "RadioButtonMenuItem.background");
         putColors(defaults, palette.accent, "Menu.selectionBackground", "MenuItem.selectionBackground",
@@ -199,6 +215,7 @@ public final class ElowbeDefaults {
         defaults.put("ProgressBar.cellLength", 1);
         defaults.put("TextField.caretForeground", palette.foreground);
         defaults.put("TextArea.caretForeground", palette.foreground);
+        defaults.put("PasswordField.caretForeground", palette.foreground);
         installTextInputMaps(defaults);
     }
 
@@ -324,7 +341,7 @@ public final class ElowbeDefaults {
     private static Font geistMono() {
         try (InputStream stream = ElowbeDefaults.class.getResourceAsStream("/GeistMono-Medium.ttf")) {
             if (stream != null) {
-                Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+                Font font = Font.createFont(Font.PLAIN, stream);
                 GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
                 return font;
             }
@@ -333,7 +350,7 @@ public final class ElowbeDefaults {
         }
 
         String os = System.getProperty("os.name", "").toLowerCase();
-        String fallback = os.contains("mac") ? "SF Pro Text" : os.contains("win") ? "Segoe UI" : "SansSerif";
+        String fallback = os.contains("mac") ? "SF Pro Text" : os.contains("win") ? "Segoe UI" : "JetBrains Mono";
         return new Font(fallback, Font.PLAIN, 13);
     }
 

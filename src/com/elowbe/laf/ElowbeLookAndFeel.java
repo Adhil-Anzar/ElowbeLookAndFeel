@@ -1,11 +1,6 @@
 package com.elowbe.laf;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -90,7 +85,7 @@ public class ElowbeLookAndFeel extends BasicLookAndFeel {
                 "ButtonUI", packageName + "ElowbeButtonUI",
                 "ToggleButtonUI", packageName + "ElowbeButtonUI",
                 "TextFieldUI", packageName + "ElowbeTextFieldUI",
-                "PasswordFieldUI", packageName + "ElowbeTextFieldUI",
+                "PasswordFieldUI", packageName + "ElowbePasswordFieldUI",
                 "FormattedTextFieldUI", packageName + "ElowbeTextFieldUI",
                 "TextAreaUI", packageName + "ElowbeTextAreaUI",
                 "ComboBoxUI", packageName + "ElowbeComboBoxUI",
@@ -110,7 +105,8 @@ public class ElowbeLookAndFeel extends BasicLookAndFeel {
                 "ProgressBarUI", packageName + "ElowbeProgressBarUI",
                 "PanelUI", packageName + "ElowbePanelUI",
                 "FileChooserUI", packageName + "ElowbeFileChooserUI",
-                "ColorChooserUI", packageName + "ElowbeColorChooserUI"
+                "ColorChooserUI", packageName + "ElowbeColorChooserUI",
+                "TableUI", packageName + "ElowbeTableUI"
         };
         table.putDefaults(uiDefaults);
     }
@@ -119,6 +115,9 @@ public class ElowbeLookAndFeel extends BasicLookAndFeel {
     protected void initComponentDefaults(UIDefaults table) {
         super.initComponentDefaults(table);
         ElowbeDefaults.install(table, theme);
+        table.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        table.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        table.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
     public static final class CommandPallete<T> extends JPanel {

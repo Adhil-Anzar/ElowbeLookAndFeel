@@ -178,7 +178,8 @@ public class ElowbeComboBoxUI extends BasicComboBoxUI {
             ElowbePalette palette = PaintUtils.palette();
             label.setOpaque(false);
             label.setBackground(new Color(0, 0, 0, 0));
-            label.setBorder(new EmptyBorder(8, 14, 8, 42));
+
+            label.setBorder(new EmptyBorder(1, 14, 1, 42));
             label.setForeground(palette.foreground);
             label.putClientProperty("Elowbe.comboSelected", Boolean.valueOf(isSelected && index >= 0));
             return label;

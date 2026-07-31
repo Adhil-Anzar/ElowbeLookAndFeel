@@ -85,9 +85,14 @@ public final class ElowbeIcons {
         return new FileSystemIcon(size, "gallery");
     }
 
-    private static Icon icon(IconCode code, int size) {
+    public static Icon icon(IconCode code, int size) {
         register();
         return new FontAwesomeIcon(code, size);
+    }
+
+    public static Icon icon(IconCode code, int size, Color color) {
+        register();
+        return new FontAwesomeIcon(code, size, color);
     }
 
     private static synchronized void register() {
@@ -100,7 +105,13 @@ public final class ElowbeIcons {
     private static final class FontAwesomeIcon implements Icon {
         private final IconCode code;
         private final int size;
+        private Color color;
 
+        private FontAwesomeIcon(IconCode code, int size, Color color) {
+            this.code = code;
+            this.size = size;
+            this.color = color;
+        }
         private FontAwesomeIcon(IconCode code, int size) {
             this.code = code;
             this.size = size;
@@ -108,7 +119,7 @@ public final class ElowbeIcons {
 
         @Override
         public void paintIcon(Component component, Graphics graphics, int x, int y) {
-            Color color = graphics.getColor();
+            Color color = this.color == null ? graphics.getColor() : this.color;
             if (color == null && component != null) {
                 color = component.getForeground();
             }

@@ -6,10 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
@@ -36,7 +33,7 @@ public class ElowbeTableHeaderUI extends BasicTableHeaderUI {
         header.setBackground(palette.card);
         header.setForeground(palette.foreground);
         header.setFont(UIManager.getFont("TableHeader.font"));
-        header.setBorder(new EmptyBorder(0, 0, 6, 0));
+        header.setBorder(new EmptyBorder(0, 0, 12, 0));
         header.setDefaultRenderer(new HeaderRenderer(header.getDefaultRenderer()));
     }
 
@@ -52,16 +49,22 @@ public class ElowbeTableHeaderUI extends BasicTableHeaderUI {
         super.paint(graphics, component);
     }
 
-    private static final class HeaderRenderer extends DefaultTableCellRenderer {
+    public static final class HeaderRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1L;
 
         private final TableCellRenderer fallback;
-        private final Border border = new ElowbeBorder(PaintUtils.palette().border, ElowbeDefaults.RADIUS_SM,
-                new Insets(7, 10, 7, 10));
+        private final Border border = BorderFactory.createCompoundBorder(
+                new EmptyBorder(0, 4, 12, 4),   // gap between header cells
+                new ElowbeBorder(
+                        PaintUtils.palette().border,
+                        ElowbeDefaults.RADIUS_SM,
+                        new Insets(7, 10, 7, 10)
+                )
+        );
 
-        private HeaderRenderer(TableCellRenderer fallback) {
+        public HeaderRenderer(TableCellRenderer fallback) {
             this.fallback = fallback;
-            setHorizontalAlignment(SwingConstants.LEFT);
+            setHorizontalAlignment(SwingConstants.CENTER);
             setOpaque(false);
         }
 
@@ -79,7 +82,7 @@ public class ElowbeTableHeaderUI extends BasicTableHeaderUI {
             Font font = UIManager.getFont("TableHeader.font");
             label.setFont(font == null ? table.getFont().deriveFont(Font.BOLD) : font);
             label.setBorder(border);
-            label.setHorizontalAlignment(SwingConstants.LEFT);
+            label.setHorizontalAlignment(getHorizontalAlignment());
             return label;
         }
     }
