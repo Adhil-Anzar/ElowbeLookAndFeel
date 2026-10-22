@@ -10,10 +10,12 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -28,7 +30,11 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import com.elowbe.laf.graph.Elowbe2DGraph;
+import com.elowbe.laf.graph.ElowbeGraphPoint;
+import com.elowbe.laf.graph.PointSelectionListener;
 import com.elowbe.laf.theme.ElowbeDefaults;
+import com.elowbe.laf.util.ElowbeCard;
 import com.elowbe.laf.util.ElowbeIcons;
 
 public class ComponentGalleryPanel extends JPanel {
@@ -54,8 +60,10 @@ public class ComponentGalleryPanel extends JPanel {
         addCard(chatAndSearchCard(), gbc, 1, 1, 1, 1);
         addCard(environmentCard(), gbc, 2, 1, 1, 2);
         addCard(surveyCard(), gbc, 3, 1, 1, 1);
+        addCard(chartCard(), gbc, 0, 2, 1, 1);
         addCard(loadingCard(), gbc, 3, 2, 1, 1);
         addCard(progressCard(), gbc, 1, 2, 1, 1);
+        addCard(cardListCard(), gbc, 0, 3, 4, 1);
     }
 
     private void addCard(JPanel panel, GridBagConstraints gbc, int x, int y, int width, int height) {
@@ -231,6 +239,74 @@ public class ComponentGalleryPanel extends JPanel {
         tint.setAlignmentX(Component.LEFT_ALIGNMENT);
         card.add(tint);
         card.add(DemoStyles.muted("Allow the wallpaper to be tinted."));
+        return card;
+    }
+
+    private JPanel chartCard() {
+        JPanel card = DemoStyles.card();
+        card.add(DemoStyles.title("Line Chart"));
+        card.add(DemoStyles.muted("Scrollable points with selection and tooltips."));
+        DemoStyles.addGap(card, 12);
+
+        Elowbe2DGraph graph = new Elowbe2DGraph();
+        graph.setPreferredSize(new Dimension(420, 240));
+        graph.setXAxisTitle("Sample");
+        graph.setYAxisTitle("Value");
+        graph.setXValuePerPoint(0.5);
+        graph.setXTickInterval(4);
+        double[] values = { 50, 20, 60, 30, 70, 80, 90, 50, 60 };
+        for (double value : values) {
+            graph.addPoint(new ElowbeGraphPoint(value, String.valueOf((int) value)));
+        }
+
+        JLabel selection = DemoStyles.muted("Click a point to select it.");
+        graph.addPointSelectionListener(new PointSelectionListener() {
+            @Override
+            public void pointSelected(ElowbeGraphPoint point) {
+                selection.setText("Selected: " + point.getLabel());
+            }
+
+            @Override
+            public void pointSelectionCleared() {
+                selection.setText("Click a point to select it.");
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(graph);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setPreferredSize(new Dimension(360, 200));
+        scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+        card.add(scrollPane);
+        DemoStyles.addGap(card, 8);
+        card.add(selection);
+        return card;
+    }
+
+    private JPanel cardListCard() {
+        JPanel card = DemoStyles.card();
+        card.add(DemoStyles.title("Card List"));
+        card.add(DemoStyles.muted("Values of type ElowbeCard render as cards; other values use the normal renderer."));
+        DemoStyles.addGap(card, 12);
+
+        DefaultListModel<ElowbeCard> model = new DefaultListModel<>();
+        ElowbeCard first = new ElowbeCard("Design review", "Walk through the new components and collect feedback.",
+                "Today, 10:00");
+        first.setIcon(ElowbeIcons.star(16));
+        model.addElement(first);
+        model.addElement(new ElowbeCard("Release notes", "Summarize the UI polish and new components.",
+                "Tomorrow, 14:00"));
+        model.addElement(new ElowbeCard("Accessibility pass", "Check focus order and keyboard navigation.",
+                "Friday, 09:30"));
+
+        JList<ElowbeCard> list = new JList<>(model);
+        list.setVisibleRowCount(3);
+        JScrollPane scrollPane = new JScrollPane(list);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setPreferredSize(new Dimension(420, 220));
+        scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 220));
+        card.add(scrollPane);
         return card;
     }
 

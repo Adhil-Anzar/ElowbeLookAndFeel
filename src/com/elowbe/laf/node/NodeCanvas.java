@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -67,14 +68,42 @@ public class NodeCanvas extends JComponent {
     private double panY;
     private double zoom = 1.0;
     private boolean restoringHistory;
+    private boolean keyBindingsInstalled;
 
     public NodeCanvas() {
+        this(true);
+    }
+
+    /**
+     * @param keyBindingsEnabled whether the built-in copy, paste, undo, redo
+     *                           and delete key bindings should be installed
+     */
+    public NodeCanvas(boolean keyBindingsEnabled) {
         setLayout(null);
         setOpaque(false);
         setFocusable(true);
         setPreferredSize(new Dimension(980, 560));
-        installKeyBindings();
+        setKeyBindingsEnabled(keyBindingsEnabled);
         installCanvasMouseBehavior();
+    }
+
+    /**
+     * Enables or disables the built-in keyboard shortcuts without recreating
+     * the canvas. Application-level key bindings keep working either way.
+     */
+    public void setKeyBindingsEnabled(boolean enabled) {
+        if (enabled == keyBindingsInstalled) {
+            return;
+        }
+        if (enabled) {
+            installKeyBindings();
+        } else {
+            uninstallKeyBindings();
+        }
+    }
+
+    public boolean isKeyBindingsEnabled() {
+        return keyBindingsInstalled;
     }
 
     public void addNode(NodeComponent node, int x, int y) {
@@ -911,7 +940,10 @@ public class NodeCanvas extends JComponent {
     }
 
     private void installKeyBindings() {
-        int shortcut = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        if (keyBindingsInstalled) {
+            return;
+        }
+        int shortcut = shortcutMask();
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke('C', shortcut), "copy");
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke('X', shortcut), "cut");
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke('V', shortcut), "paste");
@@ -979,6 +1011,42 @@ public class NodeCanvas extends JComponent {
                 redo();
             }
         });
+        keyBindingsInstalled = true;
+    }
+
+    private void uninstallKeyBindings() {
+        if (!keyBindingsInstalled) {
+            return;
+        }
+        int shortcut = shortcutMask();
+        KeyStroke[] strokes = {
+                KeyStroke.getKeyStroke('C', shortcut),
+                KeyStroke.getKeyStroke('X', shortcut),
+                KeyStroke.getKeyStroke('V', shortcut),
+                KeyStroke.getKeyStroke("DELETE"),
+                KeyStroke.getKeyStroke("BACK_SPACE"),
+                KeyStroke.getKeyStroke('A', shortcut),
+                KeyStroke.getKeyStroke('Z', shortcut),
+                KeyStroke.getKeyStroke('Z', shortcut | InputEvent.SHIFT_DOWN_MASK),
+                KeyStroke.getKeyStroke('Y', shortcut)
+        };
+        for (KeyStroke stroke : strokes) {
+            getInputMap(WHEN_FOCUSED).remove(stroke);
+        }
+        String[] actions = { "copy", "cut", "paste", "delete", "selectAll", "undo", "redo" };
+        for (String action : actions) {
+            getActionMap().remove(action);
+        }
+        keyBindingsInstalled = false;
+    }
+
+    private static int shortcutMask() {
+        try {
+            return Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        } catch (HeadlessException exception) {
+            // Allows the component to be created in headless tests.
+            return InputEvent.CTRL_DOWN_MASK;
+        }
     }
 
     private void installCanvasMouseBehavior() {

@@ -106,6 +106,7 @@ public class ElowbeLookAndFeel extends BasicLookAndFeel {
                 "PanelUI", packageName + "ElowbePanelUI",
                 "FileChooserUI", packageName + "ElowbeFileChooserUI",
                 "ColorChooserUI", packageName + "ElowbeColorChooserUI",
+                "ListUI", packageName + "ElowbeListUI",
                 "TableUI", packageName + "ElowbeTableUI"
         };
         table.putDefaults(uiDefaults);

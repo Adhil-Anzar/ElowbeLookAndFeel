@@ -1,6 +1,5 @@
 package com.elowbe.laf.ui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -11,6 +10,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -24,11 +25,29 @@ import javax.swing.plaf.basic.BasicSpinnerUI;
 
 import com.elowbe.laf.theme.ElowbeDefaults;
 import com.elowbe.laf.theme.ElowbePalette;
+import com.elowbe.laf.util.ElowbeInputs;
 import com.elowbe.laf.util.PaintUtils;
 
 public class ElowbeSpinnerUI extends BasicSpinnerUI {
     public static final String NUMBER_EDITOR_BACKGROUND_RENDERER_KEY = "Elowbe.spinnerNumberEditorBackgroundRenderer";
     public static final String NUMBER_TEXT_RENDERER_KEY = "Elowbe.spinnerNumberTextRenderer";
+    private boolean focused;
+
+    private JFormattedTextField editorTextField;
+
+    private final FocusAdapter focusListener = new FocusAdapter() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            focused = true;
+            spinner.repaint();
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            focused = false;
+            spinner.repaint();
+        }
+    };
 
     @FunctionalInterface
     public interface NumberEditorBackgroundRenderer {
@@ -60,19 +79,38 @@ public class ElowbeSpinnerUI extends BasicSpinnerUI {
     }
 
     @Override
+    protected void uninstallListeners() {
+        if (editorTextField != null) {
+            editorTextField.removeFocusListener(focusListener);
+            editorTextField = null;
+        }
+        super.uninstallListeners();
+    }
+
+    @Override
     protected JComponent createEditor() {
         JSpinner.DefaultEditor editor = new SpinnerNumberEditor(spinner);
         editor.setOpaque(false);
         editor.setBorder(new EmptyBorder(0, 0, 0, 0));
-        
+
         JFormattedTextField textField = editor.getTextField();
         textField.setOpaque(false);
         textField.setHorizontalAlignment(JFormattedTextField.LEFT);
         textField.setBorder(new EmptyBorder(0, 10, 0, 8));
         textField.setUI(new SpinnerNumberTextUI(spinner));
         textField.setForeground(PaintUtils.palette().foreground);
-        textField.setCaretColor(PaintUtils.palette().foreground);
+        textField.setCaretColor(PaintUtils.palette().primary);
         textField.setMargin(new Insets(0, 0, 0, 0));
+
+        // Attach the focus listener to the field that is actually displayed.
+        // createEditor() runs before the editor is added to the spinner, so
+        // spinner.getEditor() cannot be used here.
+        if (editorTextField != null) {
+            editorTextField.removeFocusListener(focusListener);
+        }
+        editorTextField = textField;
+        editorTextField.addFocusListener(focusListener);
+
         return editor;
     }
 
@@ -82,6 +120,7 @@ public class ElowbeSpinnerUI extends BasicSpinnerUI {
         private SpinnerNumberEditor(JSpinner spinner) {
             super(spinner, numberPattern(spinner));
             setOpaque(false);
+            setFocusable(true);
             setBorder(new EmptyBorder(0, 0, 0, 0));
         }
 
@@ -137,9 +176,7 @@ public class ElowbeSpinnerUI extends BasicSpinnerUI {
 
     private static void paintDefaultNumberEditorBackground(Graphics2D g2, JSpinner spinner,
             JFormattedTextField textField, Rectangle bounds) {
-        // This paints inside the editor's rectangular clip. The spinner shell owns rounded clipping/borders.
-//    	   g2.setColor(new Color(255, 0, 0, 40));
-//           g2.fillRoundRect(bounds.x, bounds.y, bounds.width, bounds.height, 12, 12);
+        // The spinner shell owns the rounded background and border.
     }
 
     private static void paintDefaultNumberText(Graphics2D g2, JSpinner spinner, JFormattedTextField textField,
@@ -202,29 +239,26 @@ public class ElowbeSpinnerUI extends BasicSpinnerUI {
 
     @Override
     public void paint(Graphics graphics, JComponent component) {
+        int x = 1;
+        int y = 1;
+        int width = component.getWidth() - 2;
+        int height = component.getHeight() - 2;
+
         Graphics2D g2 = PaintUtils.prepare(graphics);
         try {
-            ElowbePalette palette = PaintUtils.palette();
-            int radius = PaintUtils.radius(component, ElowbeDefaults.RADIUS_MD);
-            PaintUtils.fillRound(g2, 1, 1, component.getWidth() - 2, component.getHeight() - 2, radius, palette.card);
+            ElowbeInputs.paintBackground(g2, component, x, y, width, height);
         } finally {
             g2.dispose();
         }
 
-       super.paint(graphics, component);
+        super.paint(graphics, component);
 
         g2 = PaintUtils.prepare(graphics);
         try {
             ElowbePalette palette = PaintUtils.palette();
             int radius = PaintUtils.radius(component, ElowbeDefaults.RADIUS_MD);
-            PaintUtils.drawRound(g2, 1, 1, component.getWidth() - 2, component.getHeight() - 2, radius, palette.input);
-            g2.setStroke(new BasicStroke(2f));
-            int buttonWidth = SegmentButton.WIDTH;
-            int firstDivider = component.getWidth() - buttonWidth * 2;
-            int secondDivider = component.getWidth() - buttonWidth;
-            g2.setColor(palette.border);
-//            g2.drawLine(firstDivider, 1, firstDivider, component.getHeight() - 3);
-//            g2.drawLine(secondDivider, 1, secondDivider, component.getHeight() -3);
+            PaintUtils.drawRound(g2, x, y, width, height, radius,
+                    focused ? palette.foreground : palette.input);
         } finally {
             g2.dispose();
         }
@@ -326,9 +360,11 @@ public class ElowbeSpinnerUI extends BasicSpinnerUI {
             Graphics2D g2 = PaintUtils.prepare(graphics);
             try {
                 if (getModel().isRollover() || getModel().isPressed()) {
-                     boolean darkMode =  ElowbeDefaults.theme().isDark();
+                    ElowbePalette palette = PaintUtils.palette();
+                    Color hover = PaintUtils.mix(palette.card, palette.foreground,
+                            getModel().isPressed() ? 0.16f : 0.08f);
                     PaintUtils.fillRound(g2, 1, 1, getWidth() - 3, getHeight() - 3,
-                            ElowbeDefaults.RADIUS_SM, darkMode  ? new Color(50,50,50) : new Color(230,230,230));
+                            ElowbeDefaults.RADIUS_SM, hover);
                 }
             } finally {
                 g2.dispose();

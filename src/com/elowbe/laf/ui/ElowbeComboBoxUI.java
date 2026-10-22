@@ -33,6 +33,7 @@ import javax.swing.filechooser.FileFilter;
 import com.elowbe.laf.theme.ElowbeDefaults;
 import com.elowbe.laf.theme.ElowbePalette;
 import com.elowbe.laf.util.ElowbeIcons;
+import com.elowbe.laf.util.ElowbeInputs;
 import com.elowbe.laf.util.PaintUtils;
 
 public class ElowbeComboBoxUI extends BasicComboBoxUI {
@@ -57,11 +58,13 @@ public class ElowbeComboBoxUI extends BasicComboBoxUI {
     protected void installListeners() {
         super.installListeners();
         comboBox.addMouseListener(cursorListener);
+        ElowbeInputs.installFocusRepaint(comboBox);
     }
 
     @Override
     protected void uninstallListeners() {
         comboBox.removeMouseListener(cursorListener);
+        ElowbeInputs.uninstallFocusRepaint(comboBox);
         ElowbeCursorSupport.restoreCursor(comboBox);
         super.uninstallListeners();
     }
@@ -80,11 +83,7 @@ public class ElowbeComboBoxUI extends BasicComboBoxUI {
     public void paint(Graphics graphics, JComponent component) {
         Graphics2D g2 = PaintUtils.prepare(graphics);
         try {
-            ElowbePalette palette = PaintUtils.palette();
-            int radius = PaintUtils.radius(component, ElowbeDefaults.RADIUS_MD);
-            PaintUtils.fillRound(g2, 0, 0, component.getWidth(), component.getHeight(), radius,
-                    component.isEnabled() ? palette.card : palette.disabled);
-            PaintUtils.drawRound(g2, 0, 0, component.getWidth(), component.getHeight(), radius, palette.input);
+            ElowbeInputs.paintChrome(g2, component);
             paintSelectedValue(g2, component);
         } finally {
             g2.dispose();

@@ -40,11 +40,11 @@ public final class ElowbeDefaults {
 
     public static void install(UIDefaults defaults, ElowbeTheme theme) {
         ElowbePalette palette = theme.palette();
-        Font geistMono = geistMono();
-        FontUIResource baseFont = new FontUIResource(geistMono.deriveFont(Font.PLAIN, 13f));
-        FontUIResource smallFont = new FontUIResource(geistMono.deriveFont(Font.PLAIN, 12f));
-        FontUIResource titleFont = new FontUIResource(geistMono.deriveFont(Font.PLAIN, 15f));
-        FontUIResource monoFont = new FontUIResource(geistMono.deriveFont(Font.PLAIN, 12f));
+        Font font = geistMono();
+        FontUIResource baseFont = new FontUIResource(font.deriveFont(Font.PLAIN, 13f));
+        FontUIResource smallFont = new FontUIResource(font.deriveFont(Font.PLAIN, 12f));
+        FontUIResource titleFont = new FontUIResource(font.deriveFont(Font.PLAIN, 15f));
+        FontUIResource monoFont = new FontUIResource(font.deriveFont(Font.PLAIN, 12f));
 
         defaults.put(THEME_KEY, theme);
         defaults.put(PALETTE_KEY, palette);
@@ -186,11 +186,14 @@ public final class ElowbeDefaults {
 
     private static void installBorders(UIDefaults defaults, ElowbePalette palette) {
         defaults.put("Button.border", new ElowbeBorder(palette.border, RADIUS_MD, new Insets(7, 13, 7, 13)));
-        defaults.put("TextField.border", new ElowbeBorder(palette.input, RADIUS_MD, new Insets(7, 10, 7, 10)));
-        defaults.put("PasswordField.border", new ElowbeBorder(palette.input, RADIUS_MD, new Insets(7, 10, 7, 10)));
-        defaults.put("FormattedTextField.border", new ElowbeBorder(palette.input, RADIUS_MD, new Insets(7, 10, 7, 10)));
-        defaults.put("TextArea.border", new ElowbeBorder(palette.input, RADIUS_MD, new Insets(8, 10, 8, 10)));
-        defaults.put("ComboBox.border", new ElowbeBorder(palette.input, RADIUS_MD, new Insets(6, 10, 6, 34)));
+        // Text input chrome is painted by the UI delegates, so these borders only
+        // provide the content padding. Using a painted border here as well would
+        // double-draw the outline and clip the focus state.
+        defaults.put("TextField.border", new EmptyBorder(new Insets(7, 10, 7, 10)));
+        defaults.put("PasswordField.border", new EmptyBorder(new Insets(7, 10, 7, 10)));
+        defaults.put("FormattedTextField.border", new EmptyBorder(new Insets(7, 10, 7, 10)));
+        defaults.put("TextArea.border", new EmptyBorder(new Insets(8, 10, 8, 10)));
+        defaults.put("ComboBox.border", new EmptyBorder(new Insets(6, 10, 6, 34)));
         defaults.put("Spinner.border", new EmptyBorder(0, 0, 0, 0));
         defaults.put("ScrollPane.border", new ElowbeBorder(palette.border, RADIUS_MD, new Insets(0, 0, 0, 0)));
         defaults.put("ToolTip.border", new ElowbeBorder(palette.border, RADIUS_MD, new Insets(6, 8, 6, 8)));
