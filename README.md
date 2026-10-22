@@ -2,6 +2,9 @@
 
 A modern Look and Feel for Java Swing heavily inspired by [shadcn](https://ui.shadcn.com/).
 
+This fork is maintained by [**Adhil-Anzar**](https://github.com/Adhil-Anzar) and
+is based on [elowbe/ElowbeLookAndFeel](https://github.com/elowbe/ElowbeLookAndFeel).
+
 <p align="center">
 <img width="2287" height="1179" alt="elowbe-split" src="https://github.com/user-attachments/assets/e3f9ac25-dffd-4a5b-bf95-af4b9783f37e" />
 </p>
@@ -378,3 +381,9 @@ Open an issue on [GitHub](https://github.com/elowbe/ElowbeLookAndFeel/issues).
 <img width="2330" height="1347" alt="elowbe-notes-light-crop" src="https://github.com/user-attachments/assets/75d07c98-f107-42d4-ad73-7d60093f411d" />
 
 </p>
+
+## License
+
+Released under the [MIT License](LICENSE.txt).
+
+Copyright (c) 2026 kingroka and Adhil-Anzar.
