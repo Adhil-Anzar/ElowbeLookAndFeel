@@ -46,7 +46,7 @@ You need **Java 17** or later.
 
 ### Option 1: Download a release JAR
 
-1. Open the [Releases](https://github.com/elowbe/ElowbeLookAndFeel/releases) page.
+1. Open the [Releases](https://github.com/Adhil-Anzar/ElowbeLookAndFeel/releases) page.
 2. Download `ElowbeLookAndFeel-<version>.jar`.
 3. Add the JAR to your application's classpath (build tool dependency, `-cp`, or IDE library).
 4. Add [JIconFont](https://jiconfont.github.io/swing) to your dependencies:
@@ -67,7 +67,7 @@ You need **Java 17** or later.
 ### Option 2: Build from source
 
 ```bash
-git clone https://github.com/elowbe/ElowbeLookAndFeel.git
+git clone https://github.com/Adhil-Anzar/ElowbeLookAndFeel.git
 cd ElowbeLookAndFeel
 mvn package
 ```
@@ -97,7 +97,7 @@ kanban board, a note-taking app and a node graph editor.
 
 ### Option 1: Download the demos JAR (releases)
 
-1. From the [Releases](https://github.com/elowbe/ElowbeLookAndFeel/releases) page, download `ElowbeLookAndFeel-demos-<version>.jar`.
+1. From the [Releases](https://github.com/Adhil-Anzar/ElowbeLookAndFeel/releases) page, download `ElowbeLookAndFeel-demos-<version>.jar`.
 2. Run it:
 
 ```bash
@@ -371,7 +371,7 @@ the card renderer can be adopted incrementally.
 
 ### Where do I report bugs or request features?
 
-Open an issue on [GitHub](https://github.com/elowbe/ElowbeLookAndFeel/issues).
+Open an issue on [GitHub](https://github.com/Adhil-Anzar/ElowbeLookAndFeel/issues).
 
 ## Additional Screenshots
 
